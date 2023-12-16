@@ -1,0 +1,864 @@
+---
+title: "Trabajo grupal RStudio"
+date:  "Diciembre 2023"
+output:
+  html_document:
+    toc: true
+    toc_depht: 5
+    toc_float: true
+    theme: readable
+    lang: es-ES
+    df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+------------------------------------------------------------------------
+
+```{css echo = FALSE}
+# Cambiar color del título y subtítulos
+.columns {display:flex;}
+h1 {color: #052A59;}
+h2 {color: #274873;}
+h3 {color: #000000;}
+h4 {color: #000000;}
+```
+
+```{css echo = FALSE}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #FFFFFF;
+    background-color: #052A59;
+    border-color: #274873;
+}
+```
+
+```{r, echo=FALSE}
+# Agregar logo 
+htmltools::img(src = knitr::image_uri("logo.png"), 
+               style = 'position:absolute;
+                        top:0; 
+                        right:0;
+                        padding:10px;',
+               width  = "250px",
+               heigth = "250px")
+```
+
+## Información general
+
+El presente trabajo tiene como autores a:
+
+-   Aburto Camacllanqui, Elías
+-   Avilés Elias, Gabriel
+-   Huaman Loayza, Guido
+-   Ramírez De la Cruz, Guadalupe
+-   Rivas Su, Juan Diego
+
+
+## 1. Introducción
+
+### Contexto
+
+En los últimos años, ...
+
+
+### Problema
+
+Ante la ingente cantidad de datos ...
+
+
+### Objetivo
+
+El presente trabajo persigue el siguiente objetivo:
+
+> > Utilizar ...
+
+## 2. Metodología
+
+### Base de datos
+
+-   **Fuente:** Portal Web ...
+-   **Archivo:** "H: ..." / BD_SPSS.zip
+-   **Enlace:**
+    [ESCALE](...)
+
+### Variables
+
+-   **Denominación:** Durante el presente año usted, ...
+-   **Categorías:** "X", "Y", "Z", etc.
+
+
+### Preprocesamiento
+
+
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+
+library(tidyverse) #conjunto de paquetes 
+library("labelled") #Paquete para ver las etiquetas de las variables
+
+
+# #Creando las bases de datos
+# df1 <- haven::read_sav("01. Data/CARATULA/01_PENALES_CARATULA.sav")
+# df2 <- haven::read_sav("01. Data/CONDICIONES DE VIDA DEL INTERNO/01_PENALES_CAP300.sav")
+# df3 <- haven::read_sav("01. Data/CONDICIONES DEL INTERNO/01_PENALES_CAP100.sav")
+# df4 <- haven::read_sav("01. Data/ROL DE LAS INSTITUCIONES/01_PENALES_CAP400.sav")
+# df5 <- haven::read_sav("01. Data/TIPIFICACION DEL DELITO/01_PENALES_CAP200.sav")
+# 
+# #Integrando las bases de datos
+# 
+# df_1_2 <- inner_join(df1, df2, by = "ID_CARATULA", "INTERNO_ID")
+# df_1_2_3 <- inner_join(df_1_2, df3, by = "ID_CARATULA", "INTERNO_ID")
+# df_1_2_3_4 <- inner_join(df_1_2_3, df4, by = "ID_CARATULA", "INTERNO_ID")
+# df_total <- inner_join(df_1_2_3_4, df5, by = "ID_CARATULA", "INTERNO_ID")
+
+```
+
+
+
+
+```{r}
+
+# Seleccionar las variables de Interés
+
+# CNPP_data <- df_total |> 
+#   select(EST_PENIT, GENERO, E_CIVIL, TSALUD_8,
+#          EDAD, NACIONALIDAD, NAC_DD, DELITO_GENERICO, P101, P104_1, 
+#          P105, P107_1, P107C_1, P107_2, P107_3, P107_4, P107_5, 
+#          P107_6, P107_7, P107_8, P107_9, P107_10, P107_11, P107_12, 
+#          P109_1, P109_2, P109_3, P114, P133, P135, P201_DD, P204, P215, P220, 
+#          P303, P306, P308, P313_1, P313_2, P313_3, P313_4, P313_5, 
+#          P314, P315, P403_1, P403_2, P403_3, P403_4, P403_5, P403_6, 
+#          P403_7)
+
+
+# Guardar el dataframe en formato sav
+# library(haven)
+# 
+# write_sav(CNPP_data, "CNPP_data.sav")
+
+
+```
+
+
+
+```{r}
+# Importar datos
+
+CNPP_data <- haven::read_sav("CNPP_data.sav")
+CNPP_data
+
+
+# Presentar el contenido de las variables de interés
+var_label(CNPP_data)
+
+
+# Identificación de valores atípicos y datos perdidos
+summary(CNPP_data)
+```
+
+
+
+### Análisis de Datos
+
+
+## 3. Resultados 
+
+
+#### Antes: Antecedentes y aspectos sociodemográficos
+
+
+
+##### P109_1, P109_2 y P109_3 ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Drogas? ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Bebidas alcohólicas? ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Cigarrillos?
+
+Se crea una nueva variable, denominada "consumo"; cuyos valor es "Sí" cuando el reo consumía drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario.
+
+```{r}
+CNPP_data <- CNPP_data |> 
+  mutate(consumo = case_when(P109_1 == 1 & (P109_2 == 2 | P109_2 == 3) & (P109_3 == 2 | P109_3 == 3) ~ "DROGAS", (P109_1 == 2 | P109_1 == 3) & P109_2 == 1 & (P109_3 == 2 | P109_3 == 3) ~ "BEBIDAS ALCOHOLICAS", (P109_1 == 2 | P109_1 == 3) & (P109_2 == 2 | P109_2 == 3) & P109_3 == 1 ~ "CIGARRILLOS", P109_1 == 1 & P109_2 == 1 & (P109_3 == 2 | P109_3 == 3) ~ "DROGAS Y BEBIDAS ALCOHOLICAS", P109_1 == 1 & (P109_2 == 2 | P109_2 == 3) & P109_3 == 1 ~ "DROGAS Y CIGARRILLOS", (P109_1 == 2 | P109_1 == 3) & P109_2 == 1 & P109_3 == 1 ~ "BEBIDAS ALCOHOLICAS Y CIGARRILLOS", P109_1 == 1 & P109_2 == 1 & P109_3 == 1 ~ "DROGAS, BEBIDAS ALCOHOLICAS Y CIGARRILLOS", TRUE ~ "NO/NO CONTESTA"))
+```
+
+Utilizando 'count' y 'mutate' hallamos la cantidad de reos que consumían drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario, así como el porcentaje que representan respecto del total.
+
+```{r}
+CNPP_data |>
+  count(consumo) |>                          
+  mutate(Porcentaje_consumo = round(n/sum(n)*100,1)) |> 
+  print(n = Inf) |>   
+  arrange(desc(n))
+```
+
+A partir de la variable obtenida ('consumo'), se presenta a continuación un gráfico de barras que permitirá observar la cantidad de reos que consumían drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario.
+
+```{r}
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No sabe/No contesta")
+
+CNPP_data|>
+  mutate(consumo = recode_factor(consumo,!!!etiqueta_1)) |>
+  count(consumo) |>
+  ggplot() +
+  aes(x=1, y=n, fill=consumo) +
+  geom_col(position = "dodge", width = 0.8) +
+  geom_text(aes(label = n),
+            position = position_dodge(width = 0.8), vjust = -0.5, size = 3, fontface = "bold") +
+  theme_minimal() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: CONSUMO ANTES DE INGRESAR AL ESTABLECIMIENTO PENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)",
+    x = "Consumo",
+    y = "Frecuencia")+
+  theme(axis.text.x = element_blank())
+```
+Como puede observarse, un gran número de reos señala que consumían bebidas alcohólicas antes de ingresar al establecimiento penitenciario. En segundo lugar, 18,117 reos mencionan que no consumían ninguna de las opciones previamente mencionadas o prefirieron no contestar a la interrogante. 
+
+Luego de ello, podemos observar que lo siguen en cantidad los reos que consumían "Bebidas alcohólicas y cigarrillos", "Drogas, bebidas alcohólicas y cigarrilllos" y "Drogas y bebidas alcohólicas"; al respecto, puede observarse que las bebidas alcohólicas tienen una fuerte presencia en el consumo de los reos, desde antes de ingresar al establecimiento penitenciario.
+
+##### P114. ANTES DE INGRESAR AL ESTABLECIMIENTO PENITENCIARIO, ¿USTED TRABAJÓ ALGUNA VEZ?
+
+Utilizando 'count' y 'mutate' hallamos la cantidad de reos que trabajaron alguna vez antes de ingresar al establecimiento penitenciario, así como el porcentaje que representan respecto del total.
+
+```{r}
+CNPP_data |>
+  count(P114) |>
+  mutate(Porcentaje_trabajo_antes = round(n/sum(n)*100,1)) |>
+  print(n = Inf) |>   
+  arrange(desc(n)) |> 
+  rename("cantidad_reos"=n)
+```
+A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que trabajaron o no alguna vez antes de ingresar al establecimiento penitenciario.
+
+```{r}
+table(CNPP_data$P114)
+
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No sabe/No contesta")
+
+CNPP_data |>
+  mutate(P114 = recode_factor(P114,!!!etiqueta_1)) |>
+  count(P114) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P114) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5), size=3, fontface = "bold") +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE TRABAJÓ ANTES \nINGRESAR AL ESTABLECIMIENTO PENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)")
+```
+Como puede observarse, el 95.6% de los reos sí trabajó alguna vez antes de ingresar al establecimiento penitenciario.
+
+##### 133. ¿ALGÚN MIEMBRO DE SU FAMILIA ESTUVO PRESO EN UN ESTABLECIMIENTO PENITENCIARIO ALGUNA VEZ?
+
+Utilizando 'count' y 'mutate' hallamos la cantidad de reos que tuvieron a algún miembro de su familia preso en un establecimiento penitenciario, así como el porcentaje que representan respecto del total.
+
+```{r}
+CNPP_data |>
+  count(P133) |>
+  mutate(Porcentaje_trabajo_antes = round(n/sum(n)*100,1)) |>
+  print(n = Inf) |>   
+  arrange(desc(n)) |> 
+  rename("cantidad_reos"=n)
+```
+
+A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que tuvieron a algún miembro de su familia preso en un establecimiento penitenciario.
+
+```{r}
+table(CNPP_data$P133)
+
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No recuerda/No contesta")
+
+CNPP_data |>
+  mutate(P133 = recode_factor(P133,!!!etiqueta_1)) |>
+  count(P133) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P133) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5), size=3, fontface = "bold") +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: ¿ALGÚN MIEMBRO DE LA FAMILIA DEL REO PENITENCIARIO ESTUVO PRESO EN UN ESTABLECIMIENTO PENITENCIARIO ALGUNA VEZ?",
+    subtitle = "(Frecuencia, porcentaje)")
+```
+
+Como puede observarse, el 69.7% de los reos no tuvo a algún miembro de su familia preso en un establecimiento penitenciario; mientras que un 29.5% afirma que sí lo tuvo.
+
+##### P135. ANTES DE CUMPLIR LOS 18 AÑOS DE EDAD. ¿ALGUN(OS) DE SU(S) MEJOR(ES) AMIGO(S) COMETÍA(N) DELITOS?
+
+Utilizando 'count' y 'mutate' hallamos la cantidad de reos que, antes de cumplir los 18 años de edad, tuvieron algún mejor amigo que cometía delitos, así como el porcentaje que representan respecto del total.
+
+```{r}
+CNPP_data |>
+  count(P135) |>
+  mutate(Porcentaje_trabajo_antes = round(n/sum(n)*100,1)) |>
+  print(n = Inf) |>   
+  arrange(desc(n)) |> 
+  rename("cantidad_reos"=n)
+```
+
+A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que, antes de cumplir los 18 años de edad, tuvieron algún mejor amigo que cometía delitoso.
+
+```{r}
+table(CNPP_data$P135)
+
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No recuerda/No contesta")
+
+CNPP_data |>
+  mutate(P135 = recode_factor(P135,!!!etiqueta_1)) |>
+  count(P135) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P135) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5), size=3, fontface = "bold") +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: ANTES DE QUE EL REO PENITENCIARIO CUMPLA 18 AÑOS, ¿ALGUNO DE SUS MEJORES AMIGOS COMETÍAN DELITOS?",
+    subtitle = "(Frecuencia, porcentaje)")
+```
+
+Como puede observarse, el 65% de los reos señala que, antes de cumplir los 18 años de edad, no tuvieronconsuumo
+algún mejor amigo que cometía delitoso; mientras que un 34% señala que sí lo tuvo.
+
+
+#### Durante: Contexto del delito y situación en el Establecimiento Penitenciario
+
+
+##### P107_1 al P107_12 ¿PADECE UD. DE: ENFERMEDADES CRÓNICAS? ¿PADECE UD. DE: ENFERMEDADES INFECTO CONTAGIOSAS? ¿PADECE UD. DE: OTRAS ENFERMEDADES?
+
+**-Enfermedades crónicas:** asma, bronquitis o enfisema, hipertensión, diabetes.
+**-Enfermedades infecto contagiosas:** tuberculosis, infecciones de transmisión sexual, VIH/SIDA.
+**-Otras enfermedades:** hepatitis, depresión, ansiedad, adicción a sustancias psicoactivas, cáncer, otro.
+
+A continuación se crea una nueva variable, denominada "enfermedades"; cuyo valor es "Sí" cuando el reo posee una enfermedad crónica, infecto contagiosa u otra.
+
+Para dicho fin, en primer lugar creamos una variable dicotómica por cada tipo de enfermedad (Crónica/Infecto contagiosa/Otra); en la cual, el valor de "1" significa que el reo tiene al menos una enfermedad del tipo respectivo. 
+
+```{r}
+CNPP_data <- CNPP_data |> 
+  mutate(enfermedad_cronica = case_when(P107_1 == 1 | P107_2 == 1 | P107_3 == 1 ~ "1", TRUE ~ "2"))
+
+CNPP_data <- CNPP_data |> 
+  mutate(enfermedad_infecto_contagiosa = case_when(P107_4 == 1 | P107_5 == 1 | P107_6 == 1 ~ "1", TRUE ~ "2"))
+
+
+CNPP_data <- CNPP_data |> 
+  mutate(enfermedad_otra = case_when(P107_7 == 1 | P107_8 == 1 | P107_9 == 1 | P107_10 == 1 | P107_11 == 1 | P107_12 == 1 ~ "1", TRUE ~ "2"))
+```
+
+Luego, creamos una nueva variable denominada 'enfermedades', que pueda resumir el tipo de enfermedad que tiene cada reo penitenciario.
+
+```{r}
+CNPP_data <- CNPP_data |> 
+  mutate(enfermedades = case_when(enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 2 ~ "CRONICA", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 2 ~ "INFECTO CONTAGIOSA", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 1 ~ "OTRA", enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 2 ~ "CRONICA E INFECTO CONTAGIOSA", enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 1 ~ "CRONICA Y OTRA", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 1 ~ "INFECTO CONTAGIOSA Y OTRA", enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 1 ~ "CRONICA, INFECTO CONTAGIOSA Y OTRO", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 2 ~ "NINGUNA/NO SABE/NO RESPONDE"))
+```
+
+Utilizando 'count' y 'mutate' hallamos la cantidad de reos que poseen cierto tipo de enfermedad, así como el porcentaje que representan respecto del total.
+
+```{r}
+CNPP_data |>
+  count(enfermedades) |>
+  mutate(Porcentaje_enfermedades = round(n/sum(n)*100,1)) |>
+  print(n = Inf) |>   
+  arrange(desc(n)) |> 
+  rename("cantidad_reos"=n)
+```
+
+A partir de la variable obtenida ('enfermedades'), se presenta a continuación un gráfico de barras que permitirá observar la cantidad de reos que poseen cierto tipo de enfermedad.
+
+```{r}
+library(ggplot2)
+
+CNPP_data |>
+  mutate(enfermedades = recode_factor(enfermedades, !!!etiqueta_1)) |>
+  count(enfermedades) |>
+  ggplot() +
+  aes(x = enfermedades, y = n, fill = enfermedades) +
+  geom_col(position = "dodge", width = 0.8) +
+  geom_text(aes(label = n),
+            position = position_dodge(width = 0.8), vjust = -0.5, size = 3, fontface = "bold") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PADECE DE ALGUNA ENFERMEDAD",
+    subtitle = "(Frecuencia)",
+    x = "Enfermedades",
+    y = "Frecuencia")+
+  theme(axis.text.x = element_blank())
+```
+Como puede observarse, un gran número de reos señala que no tiene ninguna enfermedad, o no sabe, o no responde a la pregunta realizada. En segundo lugar, 12,370 reos mencionan que tienen otro tipo de enfermedad (hepatitis, depresión, ansiedad, adicción a sustancias psicoactivas, cáncer, otro); seguido por aquellos que tienen una enfermedad crónica (asma, bronquitis o enfisema, hipertensión, diabetes).
+
+
+
+
+##### P201_DD. 201. DEPARTAMENTO EN EL QUE OCURRIO EL DELITO"**
+
+```{r}
+CNPP_data |>
+  count(P201_DD) |>                          #count para contar la cantidad de casos.
+  mutate(Porcentaje = round(n/sum(n)*100,1)) |> #Mutate crea la variable porcentaje.
+  print(n = Inf) |>   
+  arrange(desc(n))
+
+```
+
+
+```{r}
+#Importar las librerías para el mapa
+
+library(plotly)
+library(mapsPERU)
+library(tidyverse)
+library(ggrepel)
+library(haven)
+
+library(leaflet)
+library(leaflet.extras)
+library(rworldxtra)
+library(raster)
+library(sf)
+
+
+
+#Extraemos las coordenadas del paquete mapsPERU departamento
+df <- map_DEP
+
+#convertimos todas las variables que tenga caracteres 
+#de minúscula a mayúsculas.
+df <- mutate_if(df, is.character, toupper)
+
+#Quitamos las tildes de las mayúsculas
+df$DEPARTAMENTO <- chartr('Á,É,Í,Ó,Ú','A,E,I,O,U', df$DEPARTAMENTO)
+
+#Renombramos la variable P201_DD de la base CNPP_data
+df_total_mapa <- rename(CNPP_data, DEPARTAMENTO = P201_DD)
+
+#Extraemos los datos de interés para el mapa
+
+Delito_depart <- df_total_mapa |>
+  count(DEPARTAMENTO) |>                          #count para contar la cantidad de casos.
+  mutate(Porcentaje = round(n/sum(n)*100,1)) |> #Mutate crea la variable porcentaje.
+  print(n = Inf) |>   
+  arrange(desc(n))
+
+#Integramos ambas bases de datos a través de DEPARTAMENTO
+mapa_delitos <- left_join(df, Delito_depart, by = "DEPARTAMENTO")
+
+#Creamos la base del mapa
+leaflet() |> addTiles() |> addCircleMarkers(data = mapa_delitos, lat = ~coords_y, radius = ~Porcentaje,
+                                        lng = ~coords_x, color = "red",
+                                        fillOpacity = 3, label = ~n, labelOptions(permanent=TRUE) )
+
+```
+Lima fue el departamento donde ocurrieron la mayor cantidad de delitos (22793 delitos)
+
+
+
+
+##### P204. CUANDO OCURRIÓ EL DELITO, ¿USTED USÓ ALGÚN ARMA?
+
+```{r}
+
+CNPP_data |>
+  filter(!is.na(P204)) |>
+  count(P204) |>
+  mutate(Porcentaje = round(n/sum(n)*100,1)) |>
+  print(n = Inf)
+
+```
+
+
+```{r}
+
+table(CNPP_data$P204, useNA = "alw")
+
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No sabe/No contesta")
+
+CNPP_data$P204 <- as.factor(CNPP_data$P204)
+
+CNPP_data |>
+  filter(!is.na(P204)) |>
+  mutate(P204 = recode_factor(P204,!!!etiqueta_1)) |>
+  count(P204) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P204) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE UTILIZÓ UN ARMA \nCUANDO OCURRIÓ EL DELITO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+```
+
+
+##### P215. ¿USTED ESTUVO INTERNADO(A) EN ALGÚN CENTRO JUVENIL?
+
+
+```{r}
+
+table(CNPP_data$P215, useNA = "alw")
+
+
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No sabe/No contesta")
+
+
+CNPP_data$P215 <- as.factor(CNPP_data$P215)
+
+
+CNPP_data |>
+  filter(!is.na(P215)) |>
+  mutate(P215 = recode_factor(P215,!!!etiqueta_1)) |>
+  count(P215) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P215) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE ESTUVO \nINTERNADO(A) EN ALGÚN CENTRO JUVENIL",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+##### P220. SIN TOMAR EN CUENTA LA SENTENCIA QUE ACTUALMENTE CUMPLE: ¿EN ALGUNA OTRA OCASIÓN LO HABÍAN SENTENCIADO O PROCESADO A PENA EFECTIVA POR ALGÚN OTRO DELITO?
+
+
+```{r}
+
+table(CNPP_data$P220, useNA = "alw")
+
+
+etiqueta_1 <- c(`1`="Sí",
+              `2`="No",
+              `3`="No sabe/No contesta")
+
+
+CNPP_data$P220 <- as.factor(CNPP_data$P220)
+
+CNPP_data |>
+  filter(!is.na(P220)) |>
+  mutate(P220 = recode_factor(P220,!!!etiqueta_1)) |>
+  count(P220) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P220) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE ESTUVO \nANTERIORMENTE SENTENCIADO O PROCESADO A PENA \nEFECTIVA POR ALGÚN OTRO DELITO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+#### Después: Expectativas al salir del Establecimiento Penitenciario
+
+
+##### P403_1. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Estudiar
+
+```{r}
+
+table(CNPP_data$P403_1, CNPP_data$DELITO_GENERICO)
+
+
+table(CNPP_data$P403_1, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_1 <- as.factor(CNPP_data$P403_1)
+
+
+CNPP_data |>
+  filter(!is.na(P403_1)) |>
+  mutate(P403_1 = recode_factor(P403_1,!!!etiqueta_2)) |>
+  count(P403_1) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() + 
+  aes(x=1, y=Porcentaje, fill=P403_1) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nESTUDIAR LUEGO DE SALIR DEL ESTABLECIMIENTO \nPENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  ) 
+```
+
+
+
+##### P403_2. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Trabajar
+
+
+```{r}
+
+table(CNPP_data$P403_2, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_2 <- as.factor(CNPP_data$P403_2)
+
+CNPP_data |>
+  filter(!is.na(P403_2)) |>
+  mutate(P403_2 = recode_factor(P403_2,!!!etiqueta_2)) |>
+  count(P403_2) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() +
+  aes(x=1, y=Porcentaje, fill=P403_2) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nTRABAJAR LUEGO DE SALIR DEL ESTABLECIMIENTO \nPENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+##### P403_3. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Viajar
+
+
+```{r}
+
+
+table(CNPP_data$P403_3, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_3 <- as.factor(CNPP_data$P403_3)
+
+CNPP_data |>
+  filter(!is.na(P403_3)) |>
+  mutate(P403_3 = recode_factor(P403_3,!!!etiqueta_2)) |>
+  count(P403_3) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1))|>
+  ggplot() + 
+  aes(x=1, y=Porcentaje, fill=P403_3) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nVIAJAR LUEGO DE SALIR DEL ESTABLECIMIENTO \nPENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+##### P403_4. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Retornar a mi país
+
+
+```{r}
+
+table(CNPP_data$P403_4, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_4 <- as.factor(CNPP_data$P403_4)
+
+CNPP_data |>
+  filter(!is.na(P403_4)) |>
+  mutate(P403_4 = recode_factor(P403_4,!!!etiqueta_2)) |>
+  count(P403_4) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1))|>
+  ggplot() + 
+  aes(x=1, y=Porcentaje, fill=P403_4) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nRETORNAR A SU PAÍS LUEGO DE SALIR DEL \nESTABLECIMIENTO PENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+
+##### P403_5. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Otros
+
+
+```{r}
+
+table(CNPP_data$P403_5, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_5 <- as.factor(CNPP_data$P403_5)
+
+CNPP_data |>
+  filter(!is.na(P403_5)) |>
+  mutate(P403_5 = recode_factor(P403_5,!!!etiqueta_2)) |>
+  count(P403_5) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() + 
+  aes(x=1, y=Porcentaje, fill=P403_5) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nREALIZAR OTRA ACTIVIDAD LUEGO DE SALIR DEL \nESTABLECIMIENTO PENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+##### P403_6. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Regresar con mi familia
+
+```{r}
+
+table(CNPP_data$P403_6, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_6 <- as.factor(CNPP_data$P403_6)
+
+
+CNPP_data |>
+  filter(!is.na(P403_6)) |>
+  mutate(P403_6 = recode_factor(P403_6,!!!etiqueta_2)) |>
+  count(P403_6) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |>
+  ggplot() + 
+  aes(x=1, y=Porcentaje, fill=P403_6) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nREGRESAR CON SU FAMILIA LUEGO DE SALIR \nDEL ESTABLECIMIENTO PENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+
+
+##### P403_7. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Reincorporarme a la sociedad
+
+
+```{r}
+
+table(CNPP_data$P403_7, useNA = "alw")
+
+etiqueta_2 <- c(`0`="No",
+              `1`="sí")
+
+CNPP_data$P403_7 <- as.factor(CNPP_data$P403_7)
+
+CNPP_data |>
+  filter(!is.na(P403_7)) |>
+  mutate(P403_7 = recode_factor(P403_7,!!!etiqueta_2)) |>
+  count(P403_7) |>
+  mutate(
+    Porcentaje = round(n/sum(n)*100,1)) |> 
+  ggplot() + 
+  aes(x=1, y=Porcentaje, fill=P403_7) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") + 
+  theme_void() + 
+  scale_fill_brewer(palette="Set1") +
+  labs(
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nREINCORPORARSE A LA SOCIEDAD LUEGO DE SALIR \nDEL ESTABLECIMIENTO PENITENCIARIO",
+    subtitle = "(Frecuencia, porcentaje)"
+  )
+
+```
+
+
+
+
+
+
+
+
+## 4. Conclusiones
+
+...
+
+## 5. Bibliografía
+
