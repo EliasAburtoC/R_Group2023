@@ -171,8 +171,7 @@ summary(CNPP_data)
 ## 3. Resultados 
 
 
-#### Antes: Antecedentes y aspectos sociodemográficos
-
+#### **ANTES: ANTECEDENTES Y ASPECTOS SOCIODEMOGRÁFICOS**
 
 
 ##### P109_1, P109_2 y P109_3 ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Drogas? ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Bebidas alcohólicas? ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Cigarrillos?
@@ -359,7 +358,7 @@ CNPP_data |>
 Como puede observarse, el 65% de los reos señala que, antes de cumplir los 18 años de edad, no tuvieron algún mejor amigo que cometiera delitos; mientras que un 34% señala que sí lo tuvo.
 
 
-#### Durante: Contexto del delito y situación en el Establecimiento Penitenciario
+#### **DURANTE: CONTEXTO DEL DELITO Y SITUACIÓN EN EL ESTABLECIMIENTO PENITENCIARIO**
 
 
 ##### P107_1 al P107_12 ¿PADECE UD. DE: ENFERMEDADES CRÓNICAS? ¿PADECE UD. DE: ENFERMEDADES INFECTO CONTAGIOSAS? ¿PADECE UD. DE: OTRAS ENFERMEDADES?
@@ -487,8 +486,7 @@ leaflet() |> addTiles() |> addCircleMarkers(data = mapa_delitos, lat = ~coords_y
 
 ```
 
-Lima fue el departamento donde ocurrieron la mayor cantidad de delitos (22793 delitos).
-
+El mapa permite identificar rápidamente el departamento donde ocurrió la mayor cantidad de delitos (22793 delitos) la cual corresponde a Lima; y la de menor cantidad, (464 delitos) a Huancavelica.
 
 
 ##### P204. CUANDO OCURRIÓ EL DELITO, ¿USTED USÓ ALGÚN ARMA?
@@ -530,6 +528,7 @@ CNPP_data |>
 
 ```
 
+Solo el 17.9% de la población penitenciaria utilizó un arma cuando ocurrió el delito. La mayoría (81.2%) no lo utilizó.
 
 
 ##### P215. ¿USTED ESTUVO INTERNADO(A) EN ALGÚN CENTRO JUVENIL?
@@ -569,6 +568,7 @@ CNPP_data |>
 
 ```
 
+El 91.8% de la población penitenciaria no estuvo internado en algún centro juvenil.
 
 
 ##### P220. SIN TOMAR EN CUENTA LA SENTENCIA QUE ACTUALMENTE CUMPLE: ¿EN ALGUNA OTRA OCASIÓN LO HABÍAN SENTENCIADO O PROCESADO A PENA EFECTIVA POR ALGÚN OTRO DELITO?
@@ -607,9 +607,193 @@ CNPP_data |>
 
 ```
 
+El 16.6% de la población penitenciaria estuvo anteriormente sentenciado o procesado a pena efectiva por algún otro delito.
 
 
-#### Después: Expectativas al salir del Establecimiento Penitenciario
+Además, la siguiente tabla muestra el establecimiento penitenciario a las que pertenecen los reos reincidentes.
+
+```{r}
+table(CNPP_data$EST_PENIT, CNPP_data$P220)
+```
+
+
+Se puede observar que el establecimiento penitenciario donde se encuentra la mayoría de reos reincidentes (opción 1) están en el E.P. de Lurigancho (1199 reos).
+
+
+
+##### 303. ¿USTED ESTÁ ESTUDIANDO EN ALGÚN PROGRAMA EN EL ESTABLECIMIENTO PENITENCIARIO?
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+CNPP_data$P303 <- as.factor(CNPP_data$P303)
+
+etiqueta_303 <- c(`1`="Participa", `2`="No Participa")
+
+BASE303 <- CNPP_data |>
+  filter(!is.na(P303)) |>
+  mutate(P303 = recode_factor(P303,!!!etiqueta_303)) |>
+  count(P303) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_303, "\n(", BASE303$n, ", ", BASE303$porcentaje, "%)" )
+pie(BASE303$n, labels = etiquetas,col=c("blue","red"), main="PARTICIPACION EN TALLERES PENITENCIARIOS \n(Frecuencia, Porcentaje)")
+
+```
+
+
+
+##### 306. ¿POR QUÉ PARTICIPA EN LOS TALLERES LABORALES?
+
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+table(CNPP_data$P306, useNA = "alw")
+
+etiqueta_306 <- c(`1`="APRENDER UN OFICIO", `2`="OBTENER BENEFICIOS", `3`="PASAR TIEMPO", `4`="OTROS")
+
+
+CNPP_data$P306 <- as.factor(CNPP_data$P306)
+
+BASE306 <- CNPP_data |>
+  filter(!is.na(P306)) |>
+  mutate(P306 = recode_factor(P306,!!!etiqueta_306)) |>
+  count(P306) |>
+  mutate(Porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_306, "(", BASE306$n, ", ", BASE306$Porcentaje, "%)" )
+pie(BASE306$n, labels = etiquetas,col=c("red","green", "blue", "orange"), main="MOTIVOS POR LOS QUE PARTICIPA DE TALLERES LABORALES \n(Frecuencia, Porcentaje)")
+```
+
+
+##### 308. ¿CUÁL ES LA RAZÓN POR LA QUE USTED NO PARTICIPA EN PROGRAMAS EDUCATIVOS?
+
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+etiqueta_308 <- c(`1`="No existen programas adecuados a su nivel"			,`2`=	"No le interesan los programas educativos que se ofrecen"		,`3`=	"Porque trabajo"	,`4`=	"No hay vacantes disponibles"			,`5`=	"Otros"			,`6` = "No sabe / No contesta"		,`7`= "Recien a ingresado o esta cerca a salir del penal"			,`8`=	"Problemas economicos"			,`9`=	"Por enfermedad y/o estado de salud"	,`10`=	"Falta de beneficios penitenciarios")
+table(CNPP_data$P308, useNA = "alw")
+
+CNPP_data$P308 <- as.factor(CNPP_data$P308)
+
+BASE308 <- CNPP_data |>
+  filter(!is.na(P308)) |>
+  mutate(P308 = recode_factor(P308,!!!etiqueta_308)) |>
+  filter(P308!="No sabe / No contesta") |>
+  count(P308) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+
+tabla=table(BASE308$P308, useNA = "alw")
+tabla
+
+etiquetas <- paste0(etiqueta_308, "\n(", BASE308$n, ", ", BASE308$porcentaje, "%)" )
+titulo <- paste0("¿CUÁL ES LA RAZÓN POR LA QUE USTED \nNO PARTICIPA EN PROGRAMAS EDUCATIVOS? \n(En Porcentaje, N=", sum(BASE308$n),")")
+graph308 <- barplot(BASE308$n, border=F , names.arg=BASE308$P308 ,     las=2  , ylim = c(0, 47000),main=titulo, ylab="Frecuencias"  )
+text(graph308, BASE308$n + 4000 , paste0(BASE308$n,"\n(",BASE308$porcentaje,"%)") ,cex=1) 
+```
+
+
+
+##### 313_1. ¿EN CUÁLES DE LAS SIGUEINTES ACTIVIDADES UD HA PARTICIPADO DURANTE EL ÚLTIMO MES: Actividades deportivas?
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+table(CNPP_data$P313_1)
+
+CNPP_data$P313_1 <- as.factor(CNPP_data$P313_1)
+
+etiqueta_313_1 <- c(`1`="SI", `2`="NO", `3`="NO SABE / NO OPINA")
+
+BASE313_1 <- CNPP_data |>
+  filter(!is.na(P313_1)) |>
+  mutate(P313_1 = recode_factor(P313_1,!!!etiqueta_313_1)) |>
+  count(P313_1) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_313_1, " (",BASE313_1$porcentaje, " %)" )
+pie(BASE313_1$n, labels = etiquetas, col=c("blue","red"), main=paste0("PARTICIPACIÓN EN LAS ACTIVIDADES DEPORTIVAS \nDURANTE EL ÚLTIMO MES \n(En Porcentaje, N=", sum(BASE313_1$n),")"))
+
+```
+
+
+##### 313_2. ¿EN CUÁLES DE LAS SIGUEINTES ACTIVIDADES UD HA PARTICIPADO DURANTE EL ÚLTIMO MES: Actividades laborales reconocidas por el INPE?
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+table(CNPP_data$P313_2)
+
+CNPP_data$P313_2 <- as.factor(CNPP_data$P313_2)
+
+etiqueta_313_2 <- c(`1`="SI", `2`="NO", `3`="NO SABE / NO OPINA")
+
+BASE313_2 <- CNPP_data |>
+  filter(!is.na(P313_2)) |>
+  mutate(P313_1 = recode_factor(P313_2,!!!etiqueta_313_2)) |>
+  count(P313_2) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_313_2, " (",BASE313_2$porcentaje, " %)" )
+pie(BASE313_2$n, labels = etiquetas, col=c("green","yellow","blue"), main=paste0("PARTICIPACIÓN EN LABORES RECONOCIDAS POR EL INPE \nDURANTE EL ÚLTIMO MES \n(En Porcentaje, N=", sum(BASE313_2$n),")"))
+
+```
+
+
+##### 313_3. ¿EN CUÁLES DE LAS SIGUEINTES ACTIVIDADES UD HA PARTICIPADO DURANTE EL ÚLTIMO MES: Labores de limpieza o mantenimiento de la institución??
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+table(CNPP_data$P313_3)
+
+CNPP_data$P313_3 <- as.factor(CNPP_data$P313_3)
+
+etiqueta_313_3 <- c(`1`="SI", `2`="NO", `3`="NO SABE / NO OPINA")
+
+BASE313_3 <- CNPP_data |>
+  filter(!is.na(P313_3)) |>
+  mutate(P313_3 = recode_factor(P313_3,!!!etiqueta_313_3)) |>
+  count(P313_3) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_313_3, " (",BASE313_3$porcentaje, " %)" )
+pie(BASE313_3$n, labels = etiquetas, col=c("orange","purple","gray"), main=paste0("PARTICIPACIÓN EN LABORES DE LIMPIEZA \nDURANTE EL ÚLTIMO MES \n(En Porcentaje, N=", sum(BASE313_3$n),")"))
+
+```
+
+
+##### 313_4. ¿EN CUÁLES DE LAS SIGUEINTES ACTIVIDADES UD HA PARTICIPADO DURANTE EL ÚLTIMO MES: Programa de tratamiento PIM??
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+table(CNPP_data$P313_4)
+
+CNPP_data$P313_4 <- as.factor(CNPP_data$P313_4)
+
+etiqueta_313_4 <- c(`1`="SI", `2`="NO", `3`="NO SABE / NO OPINA")
+
+BASE313_4 <- CNPP_data |>
+  filter(!is.na(P313_4)) |>
+  mutate(P313_4 = recode_factor(P313_4,!!!etiqueta_313_4)) |>
+  count(P313_4) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_313_4, " (",BASE313_4$porcentaje, " %)" )
+pie(BASE313_4$n, labels = etiquetas, col=c("green","red","gray"), main=paste0("PARTICIPACIÓN EN PROGRAMA DE TRATAMIENTO - PIM \nDURANTE EL ÚLTIMO MES \n(En Porcentaje, N=", sum(BASE313_4$n),")"))
+
+```
+
+
+
+##### 313_5. ¿EN CUÁLES DE LAS SIGUEINTES ACTIVIDADES UD HA PARTICIPADO DURANTE EL ÚLTIMO MES: Otros??
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+table(CNPP_data$P313_5)
+
+CNPP_data$P313_5 <- as.factor(CNPP_data$P313_5)
+
+etiqueta_313_5 <- c(`1`="SI", `2`="NO", `3`="NO SABE / NO OPINA")
+
+BASE313_5 <- CNPP_data |>
+  filter(!is.na(P313_5)) |>
+  mutate(P313_5 = recode_factor(P313_5,!!!etiqueta_313_5)) |>
+  count(P313_5) |>
+  mutate(porcentaje = round(n/sum(n)*100,1))
+
+etiquetas <- paste0(etiqueta_313_5, " (",BASE313_5$porcentaje, " %)" )
+pie(BASE313_5$n, labels = etiquetas, col=c("blue","gold","gray"), main=paste0("PARTICIPACIÓN EN OTROS \nDURANTE EL ÚLTIMO MES \n(En Porcentaje, N=", sum(BASE313_5$n),")"))
+
+```
+
+
+
+
+#### **DESPUÉS: EXPECTATIVAS AL SALIR DEL ESTABLECIMIENTO PENITENCIARIO**
+
+
 
 
 ##### P403_1. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Estudiar
@@ -644,6 +828,7 @@ CNPP_data |>
   ) 
 ```
 
+Solo el 13.4% de la población penitenciaria piensa estudiar luego de salir del establecimiento penitenciario.
 
 
 ##### P403_2. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Trabajar
@@ -679,6 +864,7 @@ CNPP_data |>
 
 ```
 
+El 92.9% de la población penitenciaria piensa trabajar luego de salir del establecimiento penitenciario.
 
 
 ##### P403_3. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Viajar
@@ -714,6 +900,7 @@ CNPP_data |>
 
 ```
 
+El 4.9% de la población penitenciaria piensa viajar luego de salir del establecimiento penitenciario.
 
 
 ##### P403_4. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Retornar a mi país
@@ -749,7 +936,7 @@ CNPP_data |>
 
 ```
 
-
+El 1.4% de la población penitenciaria piensa retornar a su país luego de salir del establecimiento penitenciario.
 
 
 ##### P403_5. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Otros
@@ -785,77 +972,8 @@ CNPP_data |>
 
 ```
 
+El 1.9% de la población piensa realizar otra actividad luego de salir del establecimiento penitenciario.
 
-
-##### P403_6. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Regresar con mi familia
-
-```{r, warning=FALSE, out.width = "100%", message=FALSE}
-
-table(CNPP_data$P403_6, useNA = "alw")
-
-etiqueta_2 <- c(`0`="No",
-              `1`="sí")
-
-CNPP_data$P403_6 <- as.factor(CNPP_data$P403_6)
-
-
-CNPP_data |>
-  filter(!is.na(P403_6)) |>
-  mutate(P403_6 = recode_factor(P403_6,!!!etiqueta_2)) |>
-  count(P403_6) |>
-  mutate(
-    Porcentaje = round(n/sum(n)*100,1)) |>
-  ggplot() + 
-  aes(x=1, y=Porcentaje, fill=P403_6) +
-  geom_bar(stat="identity") +
-  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
-            position = position_stack(vjust = 0.5)) +
-  coord_polar(theta = "y") + 
-  theme_void() + 
-  scale_fill_brewer(palette="Set1") +
-  labs(
-    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nREGRESAR CON SU FAMILIA LUEGO DE SALIR \nDEL ESTABLECIMIENTO PENITENCIARIO",
-    subtitle = "(Frecuencia, porcentaje)"
-  )
-
-```
-
-
-
-
-
-##### P403_7. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Reincorporarme a la sociedad
-
-
-```{r, warning=FALSE, out.width = "100%", message=FALSE}
-
-table(CNPP_data$P403_7, useNA = "alw")
-
-etiqueta_2 <- c(`0`="No",
-              `1`="sí")
-
-CNPP_data$P403_7 <- as.factor(CNPP_data$P403_7)
-
-CNPP_data |>
-  filter(!is.na(P403_7)) |>
-  mutate(P403_7 = recode_factor(P403_7,!!!etiqueta_2)) |>
-  count(P403_7) |>
-  mutate(
-    Porcentaje = round(n/sum(n)*100,1)) |> 
-  ggplot() + 
-  aes(x=1, y=Porcentaje, fill=P403_7) +
-  geom_bar(stat="identity") +
-  geom_text(aes(label = paste0(n,", ",round(Porcentaje,1),"%")), 
-            position = position_stack(vjust = 0.5)) +
-  coord_polar(theta = "y") + 
-  theme_void() + 
-  scale_fill_brewer(palette="Set1") +
-  labs(
-    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PIENSA \nREINCORPORARSE A LA SOCIEDAD LUEGO DE SALIR \nDEL ESTABLECIMIENTO PENITENCIARIO",
-    subtitle = "(Frecuencia, porcentaje)"
-  )
-
-```
 
 
 
@@ -866,7 +984,22 @@ CNPP_data |>
 
 ## 4. Conclusiones
 
+- Sobre los antecedentes y aspectos sociodemográficos (antes) se identificó ...
+
+- Sobre el contexto del delito y situación en el establecimiento penitenciario (durante) se halló ...
+
+- Sobre las expectativas al salir del establecimiento penitenciario (después) se destaca que la mayoría de la población penitenciaria considera trabajar como la principal actividad (92.9%), mientras que estudiar(13.4%), viajar (4.9%), retornar a su país (1.4%) u otra actividad (1.9%) ocupan menos interés. 
+
+- Se recomienda realizar encuestas sobre el comportamiento posterior de los reos al salir del establecimiento penitenciario.
+
+- Este estudio puede servir como insumo para el análisis comparativo con el Censo de la Población Penitenciaria del año 2024.
+
 ...
 
 ## 5. Bibliografía
+
+
+
+
+
 
