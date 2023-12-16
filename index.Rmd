@@ -3,9 +3,10 @@ title: "Trabajo grupal RStudio"
 date:  "Diciembre 2023"
 output:
   html_document:
-    toc: true
+    code_folding: show
+    toc: yes
     toc_depht: 5
-    toc_float: true
+    toc_float: yes
     theme: readable
     lang: es-ES
     df_print: paged
@@ -35,25 +36,30 @@ h4 {color: #000000;}
 ```
 
 ```{r, echo=FALSE}
-# Agregar logo 
-htmltools::img(src = knitr::image_uri("logo.png"), 
-               style = 'position:absolute;
-                        top:0; 
+# Agregar logo
+htmltools::img(src = knitr::image_uri("logo.png"),
+               style = 'position: absolute;
+                        top:3;
                         right:0;
                         padding:10px;',
                width  = "250px",
                heigth = "250px")
 ```
 
+
 ## Información general
 
-El presente trabajo tiene como autores a:
+**Estudiantes:**
 
 -   Aburto Camacllanqui, Elías
 -   Avilés Elias, Gabriel
 -   Huaman Loayza, Guido
 -   Ramírez De la Cruz, Guadalupe
 -   Rivas Su, Juan Diego
+
+**Curso:** Fundamento de R para CCSS y Gestión Pública 2023
+
+**Diplomatura:** Especialización en Ciencia de Datos para las Ciencia Sociales y la Gestión Pública
 
 
 ## 1. Introducción
@@ -171,26 +177,25 @@ summary(CNPP_data)
 
 ##### P109_1, P109_2 y P109_3 ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Drogas? ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Bebidas alcohólicas? ¿ANTES DE INGRESAR AL E.P. USTED CONSUMÍA: Cigarrillos?
 
-Se crea una nueva variable, denominada "consumo"; cuyos valor es "Sí" cuando el reo consumía drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario.
-
 ```{r}
+
+# Se crea una nueva variable, denominada "consumo"; cuyos valor es "Sí" cuando el reo consumía drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario.
+
 CNPP_data <- CNPP_data |> 
   mutate(consumo = case_when(P109_1 == 1 & (P109_2 == 2 | P109_2 == 3) & (P109_3 == 2 | P109_3 == 3) ~ "DROGAS", (P109_1 == 2 | P109_1 == 3) & P109_2 == 1 & (P109_3 == 2 | P109_3 == 3) ~ "BEBIDAS ALCOHOLICAS", (P109_1 == 2 | P109_1 == 3) & (P109_2 == 2 | P109_2 == 3) & P109_3 == 1 ~ "CIGARRILLOS", P109_1 == 1 & P109_2 == 1 & (P109_3 == 2 | P109_3 == 3) ~ "DROGAS Y BEBIDAS ALCOHOLICAS", P109_1 == 1 & (P109_2 == 2 | P109_2 == 3) & P109_3 == 1 ~ "DROGAS Y CIGARRILLOS", (P109_1 == 2 | P109_1 == 3) & P109_2 == 1 & P109_3 == 1 ~ "BEBIDAS ALCOHOLICAS Y CIGARRILLOS", P109_1 == 1 & P109_2 == 1 & P109_3 == 1 ~ "DROGAS, BEBIDAS ALCOHOLICAS Y CIGARRILLOS", TRUE ~ "NO/NO CONTESTA"))
-```
 
-Utilizando 'count' y 'mutate' hallamos la cantidad de reos que consumían drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario, así como el porcentaje que representan respecto del total.
+# Utilizando 'count' y 'mutate' hallamos la cantidad de reos que consumían drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario, así como el porcentaje que representan respecto del total.
 
-```{r}
 CNPP_data |>
   count(consumo) |>                          
   mutate(Porcentaje_consumo = round(n/sum(n)*100,1)) |> 
   print(n = Inf) |>   
   arrange(desc(n))
-```
 
-A partir de la variable obtenida ('consumo'), se presenta a continuación un gráfico de barras que permitirá observar la cantidad de reos que consumían drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario.
 
-```{r}
+# A partir de la variable obtenida ('consumo'), se presenta a continuación un gráfico de barras que permitirá observar la cantidad de reos que consumían drogas, bebidas alcohólicas o cigarillos antes de ingresar al centro penitenciario.
+
+
 etiqueta_1 <- c(`1`="Sí",
               `2`="No",
               `3`="No sabe/No contesta")
@@ -206,31 +211,37 @@ CNPP_data|>
   theme_minimal() + 
   scale_fill_brewer(palette="Set1") +
   labs(
-    title = "PERÚ: CONSUMO ANTES DE INGRESAR AL ESTABLECIMIENTO PENITENCIARIO",
+    title = "PERÚ: CONSUMO ANTES DE INGRESAR AL ESTABLECIMIENTO \nPENITENCIARIO",
     subtitle = "(Frecuencia, porcentaje)",
     x = "Consumo",
     y = "Frecuencia")+
   theme(axis.text.x = element_blank())
+
 ```
+
+
 Como puede observarse, un gran número de reos señala que consumían bebidas alcohólicas antes de ingresar al establecimiento penitenciario. En segundo lugar, 18,117 reos mencionan que no consumían ninguna de las opciones previamente mencionadas o prefirieron no contestar a la interrogante. 
 
 Luego de ello, podemos observar que lo siguen en cantidad los reos que consumían "Bebidas alcohólicas y cigarrillos", "Drogas, bebidas alcohólicas y cigarrilllos" y "Drogas y bebidas alcohólicas"; al respecto, puede observarse que las bebidas alcohólicas tienen una fuerte presencia en el consumo de los reos, desde antes de ingresar al establecimiento penitenciario.
 
+
 ##### P114. ANTES DE INGRESAR AL ESTABLECIMIENTO PENITENCIARIO, ¿USTED TRABAJÓ ALGUNA VEZ?
 
-Utilizando 'count' y 'mutate' hallamos la cantidad de reos que trabajaron alguna vez antes de ingresar al establecimiento penitenciario, así como el porcentaje que representan respecto del total.
 
-```{r}
+
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+
+# Utilizando 'count' y 'mutate' hallamos la cantidad de reos que trabajaron alguna vez antes de ingresar al establecimiento penitenciario, así como el porcentaje que representan respecto del total.
+
 CNPP_data |>
   count(P114) |>
   mutate(Porcentaje_trabajo_antes = round(n/sum(n)*100,1)) |>
   print(n = Inf) |>   
   arrange(desc(n)) |> 
   rename("cantidad_reos"=n)
-```
-A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que trabajaron o no alguna vez antes de ingresar al establecimiento penitenciario.
 
-```{r}
+# A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que trabajaron o no alguna vez antes de ingresar al establecimiento penitenciario.
+
 table(CNPP_data$P114)
 
 etiqueta_1 <- c(`1`="Sí",
@@ -253,25 +264,29 @@ CNPP_data |>
   labs(
     title = "PERÚ: POBLACIÓN PENITENCIARIA QUE TRABAJÓ ANTES \nINGRESAR AL ESTABLECIMIENTO PENITENCIARIO",
     subtitle = "(Frecuencia, porcentaje)")
+
+
 ```
+
 Como puede observarse, el 95.6% de los reos sí trabajó alguna vez antes de ingresar al establecimiento penitenciario.
+
 
 ##### 133. ¿ALGÚN MIEMBRO DE SU FAMILIA ESTUVO PRESO EN UN ESTABLECIMIENTO PENITENCIARIO ALGUNA VEZ?
 
-Utilizando 'count' y 'mutate' hallamos la cantidad de reos que tuvieron a algún miembro de su familia preso en un establecimiento penitenciario, así como el porcentaje que representan respecto del total.
 
-```{r}
+
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+# Utilizando 'count' y 'mutate' hallamos la cantidad de reos que tuvieron a algún miembro de su familia preso en un establecimiento penitenciario, así como el porcentaje que representan respecto del total.
+
 CNPP_data |>
   count(P133) |>
   mutate(Porcentaje_trabajo_antes = round(n/sum(n)*100,1)) |>
   print(n = Inf) |>   
   arrange(desc(n)) |> 
   rename("cantidad_reos"=n)
-```
 
-A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que tuvieron a algún miembro de su familia preso en un establecimiento penitenciario.
+# A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que tuvieron a algún miembro de su familia preso en un establecimiento penitenciario.
 
-```{r}
 table(CNPP_data$P133)
 
 etiqueta_1 <- c(`1`="Sí",
@@ -292,28 +307,30 @@ CNPP_data |>
   theme_void() + 
   scale_fill_brewer(palette="Set1") +
   labs(
-    title = "PERÚ: ¿ALGÚN MIEMBRO DE LA FAMILIA DEL REO PENITENCIARIO ESTUVO PRESO EN UN ESTABLECIMIENTO PENITENCIARIO ALGUNA VEZ?",
+    title = "PERÚ: ¿ALGÚN MIEMBRO DE LA FAMILIA DEL REO PENITENCIARIO \nESTUVO PRESO EN UN ESTABLECIMIENTO PENITENCIARIO \nALGUNA VEZ?",
     subtitle = "(Frecuencia, porcentaje)")
+
+
 ```
+
 
 Como puede observarse, el 69.7% de los reos no tuvo a algún miembro de su familia preso en un establecimiento penitenciario; mientras que un 29.5% afirma que sí lo tuvo.
 
 ##### P135. ANTES DE CUMPLIR LOS 18 AÑOS DE EDAD. ¿ALGUN(OS) DE SU(S) MEJOR(ES) AMIGO(S) COMETÍA(N) DELITOS?
 
-Utilizando 'count' y 'mutate' hallamos la cantidad de reos que, antes de cumplir los 18 años de edad, tuvieron algún mejor amigo que cometía delitos, así como el porcentaje que representan respecto del total.
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+# Utilizando 'count' y 'mutate' hallamos la cantidad de reos que, antes de cumplir los 18 años de edad, tuvieron algún mejor amigo que cometía delitos, así como el porcentaje que representan respecto del total.
+
 CNPP_data |>
   count(P135) |>
   mutate(Porcentaje_trabajo_antes = round(n/sum(n)*100,1)) |>
   print(n = Inf) |>   
   arrange(desc(n)) |> 
   rename("cantidad_reos"=n)
-```
 
-A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que, antes de cumplir los 18 años de edad, tuvieron algún mejor amigo que cometía delitoso.
+# A partir de ello, se presenta a continuación un gráfico circular que permitirá observar la cantidad de reos que, antes de cumplir los 18 años de edad, tuvieron algún mejor amigo que cometía delitoso.
 
-```{r}
 table(CNPP_data$P135)
 
 etiqueta_1 <- c(`1`="Sí",
@@ -334,12 +351,12 @@ CNPP_data |>
   theme_void() + 
   scale_fill_brewer(palette="Set1") +
   labs(
-    title = "PERÚ: ANTES DE QUE EL REO PENITENCIARIO CUMPLA 18 AÑOS, ¿ALGUNO DE SUS MEJORES AMIGOS COMETÍAN DELITOS?",
+    title = "PERÚ: ANTES DE QUE EL REO PENITENCIARIO CUMPLA \n18 AÑOS, ¿ALGUNO DE SUS MEJORES AMIGOS COMETÍAN \nDELITOS?",
     subtitle = "(Frecuencia, porcentaje)")
+
 ```
 
-Como puede observarse, el 65% de los reos señala que, antes de cumplir los 18 años de edad, no tuvieronconsuumo
-algún mejor amigo que cometía delitoso; mientras que un 34% señala que sí lo tuvo.
+Como puede observarse, el 65% de los reos señala que, antes de cumplir los 18 años de edad, no tuvieron algún mejor amigo que cometiera delitos; mientras que un 34% señala que sí lo tuvo.
 
 
 #### Durante: Contexto del delito y situación en el Establecimiento Penitenciario
@@ -348,14 +365,18 @@ algún mejor amigo que cometía delitoso; mientras que un 34% señala que sí lo
 ##### P107_1 al P107_12 ¿PADECE UD. DE: ENFERMEDADES CRÓNICAS? ¿PADECE UD. DE: ENFERMEDADES INFECTO CONTAGIOSAS? ¿PADECE UD. DE: OTRAS ENFERMEDADES?
 
 **-Enfermedades crónicas:** asma, bronquitis o enfisema, hipertensión, diabetes.
+
 **-Enfermedades infecto contagiosas:** tuberculosis, infecciones de transmisión sexual, VIH/SIDA.
+
 **-Otras enfermedades:** hepatitis, depresión, ansiedad, adicción a sustancias psicoactivas, cáncer, otro.
 
-A continuación se crea una nueva variable, denominada "enfermedades"; cuyo valor es "Sí" cuando el reo posee una enfermedad crónica, infecto contagiosa u otra.
 
-Para dicho fin, en primer lugar creamos una variable dicotómica por cada tipo de enfermedad (Crónica/Infecto contagiosa/Otra); en la cual, el valor de "1" significa que el reo tiene al menos una enfermedad del tipo respectivo. 
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+# A continuación se crea una nueva variable, denominada "enfermedades"; cuyo valor es "Sí" cuando el reo posee una enfermedad crónica, infecto contagiosa u otra.
 
-```{r}
+# Para dicho fin, en primer lugar creamos una variable dicotómica por cada tipo de enfermedad (Crónica/Infecto contagiosa/Otra); en la cual, el valor de "1" significa que el reo tiene al menos una enfermedad del tipo respectivo. 
+
+
 CNPP_data <- CNPP_data |> 
   mutate(enfermedad_cronica = case_when(P107_1 == 1 | P107_2 == 1 | P107_3 == 1 ~ "1", TRUE ~ "2"))
 
@@ -365,29 +386,23 @@ CNPP_data <- CNPP_data |>
 
 CNPP_data <- CNPP_data |> 
   mutate(enfermedad_otra = case_when(P107_7 == 1 | P107_8 == 1 | P107_9 == 1 | P107_10 == 1 | P107_11 == 1 | P107_12 == 1 ~ "1", TRUE ~ "2"))
-```
 
-Luego, creamos una nueva variable denominada 'enfermedades', que pueda resumir el tipo de enfermedad que tiene cada reo penitenciario.
+# Luego, creamos una nueva variable denominada 'enfermedades', que pueda resumir el tipo de enfermedad que tiene cada reo penitenciario.
 
-```{r}
 CNPP_data <- CNPP_data |> 
   mutate(enfermedades = case_when(enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 2 ~ "CRONICA", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 2 ~ "INFECTO CONTAGIOSA", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 1 ~ "OTRA", enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 2 ~ "CRONICA E INFECTO CONTAGIOSA", enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 1 ~ "CRONICA Y OTRA", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 1 ~ "INFECTO CONTAGIOSA Y OTRA", enfermedad_cronica == 1 & enfermedad_infecto_contagiosa == 1 & enfermedad_otra == 1 ~ "CRONICA, INFECTO CONTAGIOSA Y OTRO", enfermedad_cronica == 2 & enfermedad_infecto_contagiosa == 2 & enfermedad_otra == 2 ~ "NINGUNA/NO SABE/NO RESPONDE"))
-```
 
-Utilizando 'count' y 'mutate' hallamos la cantidad de reos que poseen cierto tipo de enfermedad, así como el porcentaje que representan respecto del total.
+# Utilizando 'count' y 'mutate' hallamos la cantidad de reos que poseen cierto tipo de enfermedad, así como el porcentaje que representan respecto del total.
 
-```{r}
 CNPP_data |>
   count(enfermedades) |>
   mutate(Porcentaje_enfermedades = round(n/sum(n)*100,1)) |>
   print(n = Inf) |>   
   arrange(desc(n)) |> 
   rename("cantidad_reos"=n)
-```
 
-A partir de la variable obtenida ('enfermedades'), se presenta a continuación un gráfico de barras que permitirá observar la cantidad de reos que poseen cierto tipo de enfermedad.
+# A partir de la variable obtenida ('enfermedades'), se presenta a continuación un gráfico de barras que permitirá observar la cantidad de reos que poseen cierto tipo de enfermedad.
 
-```{r}
 library(ggplot2)
 
 CNPP_data |>
@@ -401,30 +416,29 @@ CNPP_data |>
   theme_minimal() +
   scale_fill_brewer(palette = "Set1") +
   labs(
-    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PADECE DE ALGUNA ENFERMEDAD",
+    title = "PERÚ: POBLACIÓN PENITENCIARIA QUE PADECE \nDE ALGUNA ENFERMEDAD",
     subtitle = "(Frecuencia)",
     x = "Enfermedades",
     y = "Frecuencia")+
   theme(axis.text.x = element_blank())
+
+
 ```
+
+
 Como puede observarse, un gran número de reos señala que no tiene ninguna enfermedad, o no sabe, o no responde a la pregunta realizada. En segundo lugar, 12,370 reos mencionan que tienen otro tipo de enfermedad (hepatitis, depresión, ansiedad, adicción a sustancias psicoactivas, cáncer, otro); seguido por aquellos que tienen una enfermedad crónica (asma, bronquitis o enfisema, hipertensión, diabetes).
 
 
+##### P201_DD. DEPARTAMENTO EN EL QUE OCURRIO EL DELITO
+
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
+# CNPP_data |>
+#   count(P201_DD) |>                          #count para contar la cantidad de casos.
+#   mutate(Porcentaje = round(n/sum(n)*100,1)) |> #Mutate crea la variable porcentaje.
+#   print(n = Inf) |>   
+#   arrange(desc(n))
 
 
-##### P201_DD. 201. DEPARTAMENTO EN EL QUE OCURRIO EL DELITO"**
-
-```{r}
-CNPP_data |>
-  count(P201_DD) |>                          #count para contar la cantidad de casos.
-  mutate(Porcentaje = round(n/sum(n)*100,1)) |> #Mutate crea la variable porcentaje.
-  print(n = Inf) |>   
-  arrange(desc(n))
-
-```
-
-
-```{r}
 #Importar las librerías para el mapa
 
 library(plotly)
@@ -470,26 +484,22 @@ leaflet() |> addTiles() |> addCircleMarkers(data = mapa_delitos, lat = ~coords_y
                                         lng = ~coords_x, color = "red",
                                         fillOpacity = 3, label = ~n, labelOptions(permanent=TRUE) )
 
-```
-Lima fue el departamento donde ocurrieron la mayor cantidad de delitos (22793 delitos)
 
+```
+
+Lima fue el departamento donde ocurrieron la mayor cantidad de delitos (22793 delitos).
 
 
 
 ##### P204. CUANDO OCURRIÓ EL DELITO, ¿USTED USÓ ALGÚN ARMA?
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 CNPP_data |>
   filter(!is.na(P204)) |>
   count(P204) |>
   mutate(Porcentaje = round(n/sum(n)*100,1)) |>
   print(n = Inf)
-
-```
-
-
-```{r}
 
 table(CNPP_data$P204, useNA = "alw")
 
@@ -517,13 +527,15 @@ CNPP_data |>
     title = "PERÚ: POBLACIÓN PENITENCIARIA QUE UTILIZÓ UN ARMA \nCUANDO OCURRIÓ EL DELITO",
     subtitle = "(Frecuencia, porcentaje)"
   )
+
 ```
+
 
 
 ##### P215. ¿USTED ESTUVO INTERNADO(A) EN ALGÚN CENTRO JUVENIL?
 
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P215, useNA = "alw")
 
@@ -562,7 +574,7 @@ CNPP_data |>
 ##### P220. SIN TOMAR EN CUENTA LA SENTENCIA QUE ACTUALMENTE CUMPLE: ¿EN ALGUNA OTRA OCASIÓN LO HABÍAN SENTENCIADO O PROCESADO A PENA EFECTIVA POR ALGÚN OTRO DELITO?
 
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P220, useNA = "alw")
 
@@ -602,10 +614,7 @@ CNPP_data |>
 
 ##### P403_1. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Estudiar
 
-```{r}
-
-table(CNPP_data$P403_1, CNPP_data$DELITO_GENERICO)
-
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_1, useNA = "alw")
 
@@ -640,7 +649,7 @@ CNPP_data |>
 ##### P403_2. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Trabajar
 
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_2, useNA = "alw")
 
@@ -675,8 +684,7 @@ CNPP_data |>
 ##### P403_3. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Viajar
 
 
-```{r}
-
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_3, useNA = "alw")
 
@@ -711,7 +719,7 @@ CNPP_data |>
 ##### P403_4. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Retornar a mi país
 
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_4, useNA = "alw")
 
@@ -747,7 +755,7 @@ CNPP_data |>
 ##### P403_5. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Otros
 
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_5, useNA = "alw")
 
@@ -781,7 +789,7 @@ CNPP_data |>
 
 ##### P403_6. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Regresar con mi familia
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_6, useNA = "alw")
 
@@ -819,7 +827,7 @@ CNPP_data |>
 ##### P403_7. ¿QUÉ PIENSA HACER CUANDO SALGA DEL EP? Reincorporarme a la sociedad
 
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 table(CNPP_data$P403_7, useNA = "alw")
 
