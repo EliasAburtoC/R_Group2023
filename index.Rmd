@@ -241,7 +241,7 @@ df1 <- CNPP_data |>
 print(df1)
 ```
 
-Para una mejor visualizacion de la data, la columna modificaciones la columna genero, 1 al valor de hombre y 2 al valor de mujer.
+Para una mejor visualizacion de la data, se modificó la columna género, 1 al valor de hombre y 2 al valor de mujer.
 
 ```{r}
 ggplot(df1, aes(x = NAC_DD, y = cantidad, fill = GENERO)) +
@@ -251,7 +251,7 @@ ggplot(df1, aes(x = NAC_DD, y = cantidad, fill = GENERO)) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-En este grafico de barras podemos apreciar que Lima es la ciudad de origen de todos los reos tanto hombres como mujeres; seguido por Huanuco, La Libertad y Piura.
+En este grafico de barras podemos apreciar que Lima es la ciudad de origen con más reos tanto hombres como mujeres; seguido por Huanuco, La Libertad y Piura.
 
 
 ##### NACIONALIDAD
@@ -328,7 +328,7 @@ idioma_var <- unique(CNPP_data$P101)
 print(idioma_var)
 ```
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 # Creando la vriable que muestre los datos del idioma
 CNPP_data <- CNPP_data %>%
   mutate(P101 = as.character(P101))
@@ -352,7 +352,7 @@ idioma_var1 <- unique(CNPP_data$P101_label)
 print(idioma_var1)
 
 ```
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 #Se crea la tabla que muestra la frecuencia del primer idioma aprendido
 IDIOMA_FIL <- CNPP_data %>%
   filter(!is.na(P101_label))
@@ -425,7 +425,7 @@ ggplot(EDUC, aes(x = P104_1_label)) +
 
 
 
-#####P105
+##### P105
 
 **MOTIVO POR EL CÚAL NO CULMINÓ SUS ESTUDIOS**
 
@@ -764,7 +764,7 @@ Se puede observar que el establecimiento penitenciario donde se encuentra la may
 
 **Delitos genéricos**
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 delitos_var <- unique(CNPP_data$DELITO_GENERICO) 
 print(delitos_var)
 ```
@@ -773,7 +773,7 @@ Esta información muestra todos los tipos de delitos que han cometido las person
 
 DELITOS GENÉRICOS ORDENADO POR ORDEN DE FRECUENCIA
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 tabla_delitos <- table(CNPP_data$DELITO_GENERICO)
 df_DEL_GEN <- as.data.frame(tabla_delitos)
@@ -790,7 +790,7 @@ Se encuentra que el delito más cometido es el delito contra el patrimonio,  seg
 
 **DELITO GENÉRICO COMETIDO POR CADA DEPARTAMENTO**
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 CNPP_data_filtered <- CNPP_data %>% #Filtrando el delito cometido sin NA o espacios
   filter(!is.na(P201_DD) & P201_DD != "")
@@ -809,7 +809,7 @@ Para profundizar el tipo de delitos, se realiza un análisis que muestra en el t
 
 **DELITOS ESPECÍFICOS A PARTIR DEL DELITO MÁS COMETIDO**
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 CNPP_data_filtrado_delitos_patrimonio <- CNPP_data %>% #Se filtra un solo delito
   filter(!is.na(DELITO_GENERICO) & DELITO_GENERICO == "DELITOS CONTRA EL PATRIMONIO")
@@ -1002,7 +1002,6 @@ CNPP_data |>
 ```
 
 Solo el 17.9% de la población penitenciaria utilizó un arma cuando ocurrió el delito. La mayoría (81.2%) no lo utilizó.
-
 
 
 
@@ -1442,40 +1441,35 @@ El 1.9% de la población piensa realizar otra actividad luego de salir del estab
 ## 4. Conclusiones
 
 
-1. Sobre los antecedentes y aspectos sociodemográficos (antes) se identificaron las siguientes conclusiones:
+1. Sobre los antecedentes y aspectos sociodemográficos:
 
-- Lima es el departamento en el que se comete más delitos, seguido por La Libertad. Entre los delitos que más se cometen se encuentra contra el patrimonio; al desagregar esta variable se encuentra que el robo y hurto agravado son los delitos que más se cometen.
+- Una amplia mayoría de internos(as) (95.6%) trabajó antes de ingresar al Centro Penitenciario. Sin embargo, tal como se señaló, la desigualdad de oportunidades se convierte en un factor que propicia el crimen, dado que se ven imposibilitadas de alcanzar su **objetivo de riqueza**; por lo que su acción delictiva pudo haberse ocasionado a raíz de la existencia de desafíos como el nivel de educación, nivel de destreza o marginación social que impidieron tal objetivo.
 
-- Una amplia mayoría de internos(as) (95.6%) trabajó antes de ingresar al Centro Penitenciario. Sin embargo, tal como se señaló, la desigualdad de oportunidades se convierte en un factor que propicia el crimen, dado que se ven imposibilitadas de alcanzar su objetivo de riqueza; por lo que su acción delictiva pudo haberse ocasionado a raíz de la existencia de desafíos como el nivel de educación, nivel de destreza o marginación social.
+- En el caso del grado educativo, es la secundaria completa e incompleta en la suelen ubicarse la mayoría de personas. El motivo que brindan del por qué no terminaron su grado de estudios es que los expulsaron de su institución educativa lo cual es indicador de **conductas antisociales a temprana edad**. 
 
-- Por ejemplo, en el caso del grado educativo, es la secundaria completa e incompleta en la suelen ubicarse la mayoría de personas. El motivo que brindan del por qué no terminaron su grado de estudios es que los expulsaron de su institución educativa.
+- El **estilo de vida personal** y los **modelos de comportamiento social** podrían haber influido en el comportamiento delictivo. Por ejemplo, se observó que el consumo de bebidas alcohólicas y drogas estuvieron presentes en sus vidas. Asimismo, el 29.5% de los internos señaló que algún miembro de su familia estuvo preso en un Centro Penitenciario y el 34% señaló que, antes de cumplir 18 años, algunos de sus mejores amigos habían cometido delitos.
 
-- A partir del análisis realizado, se puede observar que el interno cuenta con una serie de desafíos y factores de riesgo para reinsertarse en la sociedad y evitar la reincidencia delictiva, dado que una parte de ellos se vio envuelta en un estilo de vida delictivo previo a su internamiento en el Centro Penitenciario. Por ejemplo, se observó que el consumo de bebidas alcohólicas y drogas estuvieron presentes en sus vidas. Asimismo, el 29.5% de los internos señaló que algún miembro de su familia estuvo preso en un Centro Penitenciario y el 34% señaló que, antes de cumplir 18 años, algunos de sus mejores amigos habían cometido delitos.
+- La desigualdad económica y social en el país, los actos delictivos de familiares y amigos que actúan como modelos de comportamiento social y el estilo de vida personal podrían ser parte de las **influencias** que condujeron al acto delictivo.
 
 
 2. Sobre el contexto del delito y situación en el establecimiento penitenciario:
 
-- Se pudo observar que los internos sufren principalmente de enfermedades crónicas y otros tipos de enfermedades. En algunos de los casos, dichas enfermedades podrían implicar un tratamiento arduo o, incluso, no tener cura alguna. Por tanto, esto se convierte en un factor imposible de cambiar o un desafío en sus vidas, lo cual los posiciona en una difícil situación para su reinserción social.
+- **Lima** es el departamento en el que se comete más delitos y el lugar de nacimiento de la mayoría de los reos penitenciarios. Entre los delitos que más se cometen se encuentra contra el patrimonio; al desagregar esta variable se encuentra que el robo y hurto agravado son los delitos que más se cometen.
 
-- Sobre la participación en talleres penitenciarios, 19,501 internos se encuentran registrados. Esta cantidad implica que solo el 25.7% de los internos están inscritos. En ese contexto, se evidencia la existencia de una brecha importante de internos que no participan de ningún programa. En ese sentido, las autoridades podrían orientar sus políticas y  establecer como indicador en sus programas presupuestales. 
+- Se pudo observar que los internos sufren principalmente de **enfermedades crónicas**. En algunos de los casos, dichas enfermedades podrían implicar un tratamiento arduo o, incluso, no tener cura alguna. Por tanto, esto se convierte en un factor imposible de cambiar o un desafío en sus vidas, lo cual los posiciona en una difícil situación para su reinserción social.
 
-- De los tipos de talleres penitenciarios, INPE brinda talleres laborales, en los cuáles se encuentran registrados 13,472 internos. El principal motivo por el cual se inscriben en este tipo de taller es para aprender un oficio (53.8%), obtener beneficios (37.1%) y pasar el tiempo (8%). Se observa que los internos consideran de gran utilidad los talleres laborales. 
+- Sobre la participación en talleres penitenciarios, 19,501 internos se encuentran registrados. Esta cantidad implica que solo el 25.7% de los internos están inscritos. En ese contexto, se evidencia la existencia de una **brecha importante de internos que no participan de ningún programa**. En ese sentido, las autoridades podrían orientar sus políticas y  establecer como indicador en sus programas presupuestales. 
 
-- Asimismo, INPE también brinda programas educativos. En tal sentido, el principal motivo por el cual los internos no participan en este programa es porque se encuentran trabajando (58%), no habían vacantes disponibles (9.9%) y porque no les interesaba la oferta de programas educativos (8.5%). El INPE podría considerar los horarios de los talleres educativos para que estos no se crucen con los horarios laborales y muchos más internos puedan estudiar.
+- De los tipos de talleres penitenciarios, INPE brinda talleres laborales, en los cuáles se encuentran registrados 13,472 internos. El principal motivo por el cual se inscriben en este tipo de taller es para aprender un oficio (53.8%), obtener beneficios (37.1%) y pasar el tiempo (8%). Se observa que **los internos consideran de gran utilidad los talleres laborales**.
 
-- El 64.9% de los internos participaron en actividades deportivas durante el último mes. Este porcentaje significativo implica que los internos están interesados en actividades deportivas. INPE podría considerar brindar mayor tiempo para realizar actividades deportivas como incentivo positivo para que los internos se inscriban en talleres penitenciarios.
+- Asimismo, INPE también brinda programas educativos. En tal sentido, el principal motivo por el cual los internos **no participan en este programa es porque se encuentran trabajando (58%)**, no habían vacantes disponibles (9.9%) y porque no les interesaba la oferta de programas educativos (8.5%). El INPE podría considerar los horarios de los talleres educativos para que estos no se crucen con los horarios laborales y muchos más internos puedan estudiar.
 
-- El 43.3% de los internos han participado en algún Programa de Intervención Multidisciplinario.
-Lima es la primera ciudad de Origen de los reos actualmente, llegando aproximandamente a 18mil personas de sexo masculino, y unos 1800 personas de sexo femenino, seguido por las ciudades de Huanuco, La Libertad y Piura.
-
-- De acuerdo a la Nacionalidad de los Reos, el Peruano supera las 70 mil personas, seguido de la nacionalidad Colombiana, Español y Mexico que están en el rango de 260 a 350 personas.
-
-- Tenemos 3 mil reos jóvenes llegando a los 28 años , seguido por  jóvenes de 22 años (2800 aprox) y adultos jóvenes de 32 años(2850 aprox).
+- El 64.9% de los internos participaron en actividades deportivas durante el último mes. Este porcentaje significativo implica que **los internos están interesados en actividades deportivas**. INPE podría considerar brindar mayor tiempo para realizar actividades deportivas como incentivo positivo para que los internos se inscriban en talleres penitenciarios.
 
 
 3. Sobre las expectativas al salir del establecimiento penitenciario:
 
-- La mayoría de la población penitenciaria considera trabajar como la principal actividad a realizar (92.9%), mientras que estudiar (13.4%), viajar (4.9%), retornar a su país (1.4%) u otra actividad (1.9%) ocupan menos interés. En ese contexto, el interés por el trabajo como principal actividad se posiciona como un factor clave que podría influenciar en el interno para desistir de cometer actos delictivos en el futuro. Sin embargo, es importante mencionar que sólo el 48.1% participa en labores reconocidas por el INPE; asimismo, el 25.7% participa de los talleres penitenciarios y el 53.8% de ellos participa con la finalidad de aprender algún oficio.
+- La mayoría de la población penitenciaria considera **trabajar como la principal actividad a realizar (92.9%)**, mientras que estudiar (13.4%), viajar (4.9%), retornar a su país (1.4%) u otra actividad (1.9%) ocupan un menor interés. En ese contexto, el interés por el trabajo como principal actividad se posiciona como un factor clave que podría influenciar en el interno para desistir de cometer actos delictivos en el futuro. Sin embargo, es importante mencionar que sólo el 48.1% participa en labores reconocidas por el INPE; asimismo, el **25.7%** participa de los talleres penitenciarios y el **53.8%** de ellos participa con la finalidad de aprender algún oficio. En consecuencia, puede existir la intención de trabajar al salir del establecimiento penitenciario pero debido a la falta de competencias es probable que tengan muchas **dificultades para alcanzarlo**.
 
 
 ## 5. Limitaciones
@@ -1494,7 +1488,7 @@ Asimismo, dada las características de los datos obtenidos, se precisa que se cu
 
 - Este estudio puede servir como insumo para el análisis comparativo con el Censo de la Población Penitenciaria del año 2024.
 
-...
+
 
 ## 7. Bibliografía
 
