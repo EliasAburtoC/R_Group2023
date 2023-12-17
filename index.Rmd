@@ -143,6 +143,7 @@ Estos capítulos abordan aspectos específicos de la población penitenciaria, d
 
 ### Preprocesamiento
 
+Se integraron las bases de cada capítulo en un solo dataframe.
 
 ```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
@@ -167,8 +168,9 @@ library("labelled") #Paquete para ver las etiquetas de las variables
 ```
 
 
+Se seleccionaron las variables de interés y se exportó en formato sav.
 
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 
 # Seleccionar las variables de Interés
 
@@ -191,9 +193,9 @@ library("labelled") #Paquete para ver las etiquetas de las variables
 
 ```
 
+Se observan las variables de interés y la identificación de posibles valores atípicos.
 
-
-```{r}
+```{r, warning=FALSE, out.width = "100%", message=FALSE}
 # Importar datos
 
 CNPP_data <- haven::read_sav("CNPP_data.sav")
@@ -209,8 +211,15 @@ summary(CNPP_data)
 ```
 
 
-
 ### Análisis de Datos
+
+En el marco de la presente investigación, se emplearon varios paquetes para facilitar la manipulación, limpieza y procesamiento de los datos. Inicialmente, se hizo uso del conjunto de paquetes "tidyverse", que incorpora herramientas como "dplyr" para transformar datos, "tidyr" para reorganizarlos y "ggplot2" para su visualización efectiva. El paquete "labelled" desempeñó el papel para la manipulación de datos etiquetados, permitiendo asignar, recuperar y gestionar etiquetas en las variables.
+
+Con el propósito de gestionar el formato específico de los datos de la Población Penitenciaria, originalmente en SPSS (.sav), se implementó el paquete "haven" para la importación y exportación eficiente de datos. Además, "plotly" se utilizó para la creación de gráficos interactivos, mientras que "mapsPERU" facilitó la representación cartográfica con datos específicos de Perú, posibilitando la elaboración de mapas temáticos.
+
+La mejora de la legibilidad en los gráficos fue abordada mediante el uso de "ggrepel", evitando superposiciones de etiquetas. En el ámbito de mapas interactivos, los paquetes "leaflet" y "leaflet.extras" posibilitaron la interacción con capas, marcadores y controles, mientras que "rworldxtra" proporcionó datos geográficos detallados a nivel mundial.
+ 
+Adicionalmente, se integraron los paquetes "raster" y "sf" para manipular imágenes y realizar análisis espaciales en R. Este enfoque multidisciplinario con diversos paquetes contribuyó para realizar un análisis completo de los datos recopilados en el censo del año 2016.
 
 
 ## 3. Resultados 
@@ -1430,8 +1439,46 @@ El 1.9% de la población piensa realizar otra actividad luego de salir del estab
 
 
 
+## 4. Conclusiones
 
-## 4. Limitaciones
+
+1. Sobre los antecedentes y aspectos sociodemográficos (antes) se identificaron las siguientes conclusiones:
+
+- Lima es el departamento en el que se comete más delitos, seguido por La Libertad. Entre los delitos que más se cometen se encuentra contra el patrimonio; al desagregar esta variable se encuentra que el robo y hurto agravado son los delitos que más se cometen.
+
+- Una amplia mayoría de internos(as) (95.6%) trabajó antes de ingresar al Centro Penitenciario. Sin embargo, tal como se señaló, la desigualdad de oportunidades se convierte en un factor que propicia el crimen, dado que se ven imposibilitadas de alcanzar su objetivo de riqueza; por lo que su acción delictiva pudo haberse ocasionado a raíz de la existencia de desafíos como el nivel de educación, nivel de destreza o marginación social.
+
+- Por ejemplo, en el caso del grado educativo, es la secundaria completa e incompleta en la suelen ubicarse la mayoría de personas. El motivo que brindan del por qué no terminaron su grado de estudios es que los expulsaron de su institución educativa.
+
+- A partir del análisis realizado, se puede observar que el interno cuenta con una serie de desafíos y factores de riesgo para reinsertarse en la sociedad y evitar la reincidencia delictiva, dado que una parte de ellos se vio envuelta en un estilo de vida delictivo previo a su internamiento en el Centro Penitenciario. Por ejemplo, se observó que el consumo de bebidas alcohólicas y drogas estuvieron presentes en sus vidas. Asimismo, el 29.5% de los internos señaló que algún miembro de su familia estuvo preso en un Centro Penitenciario y el 34% señaló que, antes de cumplir 18 años, algunos de sus mejores amigos habían cometido delitos.
+
+
+2. Sobre el contexto del delito y situación en el establecimiento penitenciario:
+
+- Se pudo observar que los internos sufren principalmente de enfermedades crónicas y otros tipos de enfermedades. En algunos de los casos, dichas enfermedades podrían implicar un tratamiento arduo o, incluso, no tener cura alguna. Por tanto, esto se convierte en un factor imposible de cambiar o un desafío en sus vidas, lo cual los posiciona en una difícil situación para su reinserción social.
+
+- Sobre la participación en talleres penitenciarios, 19,501 internos se encuentran registrados. Esta cantidad implica que solo el 25.7% de los internos están inscritos. En ese contexto, se evidencia la existencia de una brecha importante de internos que no participan de ningún programa. En ese sentido, las autoridades podrían orientar sus políticas y  establecer como indicador en sus programas presupuestales. 
+
+- De los tipos de talleres penitenciarios, INPE brinda talleres laborales, en los cuáles se encuentran registrados 13,472 internos. El principal motivo por el cual se inscriben en este tipo de taller es para aprender un oficio (53.8%), obtener beneficios (37.1%) y pasar el tiempo (8%). Se observa que los internos consideran de gran utilidad los talleres laborales. 
+
+- Asimismo, INPE también brinda programas educativos. En tal sentido, el principal motivo por el cual los internos no participan en este programa es porque se encuentran trabajando (58%), no habían vacantes disponibles (9.9%) y porque no les interesaba la oferta de programas educativos (8.5%). El INPE podría considerar los horarios de los talleres educativos para que estos no se crucen con los horarios laborales y muchos más internos puedan estudiar.
+
+- El 64.9% de los internos participaron en actividades deportivas durante el último mes. Este porcentaje significativo implica que los internos están interesados en actividades deportivas. INPE podría considerar brindar mayor tiempo para realizar actividades deportivas como incentivo positivo para que los internos se inscriban en talleres penitenciarios.
+
+- El 43.3% de los internos han participado en algún Programa de Intervención Multidisciplinario.
+Lima es la primera ciudad de Origen de los reos actualmente, llegando aproximandamente a 18mil personas de sexo masculino, y unos 1800 personas de sexo femenino, seguido por las ciudades de Huanuco, La Libertad y Piura.
+
+- De acuerdo a la Nacionalidad de los Reos, el Peruano supera las 70 mil personas, seguido de la nacionalidad Colombiana, Español y Mexico que están en el rango de 260 a 350 personas.
+
+- Tenemos 3 mil reos jóvenes llegando a los 28 años , seguido por  jóvenes de 22 años (2800 aprox) y adultos jóvenes de 32 años(2850 aprox).
+
+
+3. Sobre las expectativas al salir del establecimiento penitenciario:
+
+- La mayoría de la población penitenciaria considera trabajar como la principal actividad a realizar (92.9%), mientras que estudiar (13.4%), viajar (4.9%), retornar a su país (1.4%) u otra actividad (1.9%) ocupan menos interés. En ese contexto, el interés por el trabajo como principal actividad se posiciona como un factor clave que podría influenciar en el interno para desistir de cometer actos delictivos en el futuro. Sin embargo, es importante mencionar que sólo el 48.1% participa en labores reconocidas por el INPE; asimismo, el 25.7% participa de los talleres penitenciarios y el 53.8% de ellos participa con la finalidad de aprender algún oficio.
+
+
+## 5. Limitaciones
 
 Asimismo, dada las características de los datos obtenidos, se precisa que se cuentan con las siguientes limitaciones: 
 
@@ -1441,23 +1488,15 @@ Asimismo, dada las características de los datos obtenidos, se precisa que se cu
   2. Limitación Metodológica: Los datos obtenidos del Censo Nacional de Población Penitenciaria, solo reflejan las características de los internos, por lo tanto, no hay información suficiente que permita realizar un análisis causal para identificar los determinantes sociodemográficos que inciden en ser detenidos y condenados a prisión. Asimismo, el diseño del censo no permite capturar información sobre las actividades y conductas de los internos luego de haber cumplido su condena, sólo sus expectativas. 
 
 
+## 6. Recomendaciones
 
-## 5. Conclusiones
-
-- Sobre los antecedentes y aspectos sociodemográficos (antes) se identificó ...
-
-- Sobre el contexto del delito y situación en el establecimiento penitenciario (durante) se halló ...
-
-- Sobre las expectativas al salir del establecimiento penitenciario (después) se destaca que la mayoría de la población penitenciaria considera trabajar como la principal actividad (92.9%), mientras que estudiar(13.4%), viajar (4.9%), retornar a su país (1.4%) u otra actividad (1.9%) ocupan menos interés. 
-
-- Se recomienda realizar encuestas sobre el comportamiento posterior de los reos al salir del establecimiento penitenciario.
+- Se recomienda realizar un seguimiento sobre el comportamiento posterior de los reos al salir del establecimiento penitenciario mediante estudios longitudinales.
 
 - Este estudio puede servir como insumo para el análisis comparativo con el Censo de la Población Penitenciaria del año 2024.
 
-
 ...
 
-## 6. Bibliografía
+## 7. Bibliografía
 
 
 1. Cheong, T. S., & Wu, Y. (2015). Crime rates and inequality: a study of crime in contemporary China. Journal of the Asia Pacific Economy, 20(2), 202–223. https://doi.org/10.1080/13547860.2014.964961 
